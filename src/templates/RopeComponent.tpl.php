@@ -6,5 +6,5 @@ use CodeIgniter\View\Cells\Cell;
 
 class {class} extends Cell
 {
-    protected string $view = "rope/{view_name}";
+    protected string $view = APPPATH . "Views/rope/{view_name}.php";
 }
