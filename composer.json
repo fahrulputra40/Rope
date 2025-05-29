@@ -4,18 +4,14 @@
     "autoload": {
       "psr-4": {
         "Fahrul\\Rope\\": "src/"
-      }
+      },
+      "classmap": ["src/Config/Services.php"]
     },
     "extra": {
       "codeigniter4": {
         "commands": [
           "fahrul/rope\\Commands\\MakeRopeComponent"
-        ],
-        "discover": {
-          "services": [
-            "fahrul/rope\\Service\\Cell"
-          ]
-        }
+        ]
       }
     },
     "authors": [

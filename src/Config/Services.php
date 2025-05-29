@@ -1,6 +1,6 @@
 <?php 
 
-namespace Fahrul\Rope\Service;
+namespace Fahrul\Rope\Config;
 
 use Fahrul\Rope\RopeCell;
 use CodeIgniter\Config\BaseService;
@@ -10,8 +10,6 @@ class Services extends BaseService
 {
     public static function viewcell(bool $getShared = true)
     {
-        echo "A";
-        die;
         if ($getShared) {
             return static::getSharedInstance('viewcell');
         }
