@@ -1,0 +1,16 @@
+{
+    "name": "fahrul/rope",
+    "description": "A full stack utility like live wire for code igniter 4",
+    "autoload": {
+        "psr-4": {
+            "Fahrul\\Rope\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "fahrulputra40",
+            "email": "fahrulputra40@gmail.com"
+        }
+    ],
+    "require": {}
+}
