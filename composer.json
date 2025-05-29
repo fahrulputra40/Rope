@@ -2,17 +2,30 @@
     "name": "fahrul/rope",
     "description": "A full stack utility like live wire for code igniter 4",
     "autoload": {
-        "psr-4": {
-            "Fahrul\\Rope\\": "src/"
+      "psr-4": {
+        "Fahrul\\Rope\\": "src/"
+      }
+    },
+    "extra": {
+      "codeigniter4": {
+        "commands": [
+          "fahrul/rope\\Commands\\MakeRopeComponent"
+        ],
+        "discover": {
+          "services": [
+            "fahrul/rope\\Service\\Cell"
+          ]
         }
+      }
     },
     "authors": [
-        {
-            "name": "fahrulputra40",
-            "email": "fahrulputra40@gmail.com"
-        }
+      {
+        "name": "fahrulputra40",
+        "email": "fahrulputra40@gmail.com"
+      }
     ],
-    "require": {}, 
+    "require": {},
     "minimum-stability": "dev",
     "prefer-stable": true
-}
+  }
+  
