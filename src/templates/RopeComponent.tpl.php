@@ -2,9 +2,9 @@
 
 namespace {namespace};
 
-use CodeIgniter\View\Cells\Cell;
+use Fahrul\Rope\RopeBaseCell;
 
-class {class} extends Cell
+class {class} extends RopeBaseCell
 {
     protected string $view = APPPATH . "Views/rope/{view_name}.php";
 }
