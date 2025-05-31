@@ -3,9 +3,7 @@
 namespace Fahrul\Rope\Commands;
 
 use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
 use CodeIgniter\CLI\GeneratorTrait;
-use Config\Generators;
 use Throwable;
 
 class MakeRopeComponent extends BaseCommand{
@@ -13,8 +11,8 @@ class MakeRopeComponent extends BaseCommand{
 
     private $viewName = '';
 
-    protected $group       = 'Generators';
-    protected $name        = 'make:rope';
+    protected $group       = 'Rope';
+    protected $name        = 'rope:component';
     protected $description = 'Generate a new view cell class';
 
     public function run(array $params)

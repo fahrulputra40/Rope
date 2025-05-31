@@ -12,6 +12,7 @@ use CodeIgniter\View\Cells\Cell as BaseCell;
 class RopeCell extends Cell{
 
     private DOMDocument $dom;
+    static private $DATA_ATTR_KEY = "rope:data";
 
     public function __construct(CacheInterface $cache)
     {
@@ -19,11 +20,14 @@ class RopeCell extends Cell{
         $this->dom = new DOMDocument();
     }
 
-    final public function renderUpdate(string $library, array $params){
-
+    
+    public function renderPartial(BaseCell $cell){
+        $params = $this->prepareParams(null);
+        [$output, $state] = $this->renderBaseCell($cell, 'render', $params);
+        return $output;
     }
 
-    final public function render(string $library, $params = null, int $ttl = 0, ?string $cacheName = null): string{
+    public function render(string $library, $params = null, int $ttl = 0, ?string $cacheName = null): string{
         [$template, $params, $state] =  $this->renderTemplate($library, $params, $ttl, $cacheName);
         $this->dom->loadHTML("<body>".$template.'</body>');
         $children = $this->dom->getElementsByTagName('body')[0]->childNodes;
@@ -35,9 +39,15 @@ class RopeCell extends Cell{
             return "<p>Invalid root component</p>";
         }else{
             $root = $children[0];
-            $root->setAttribute('rope:id', isset($params['id']) ? $params['id'] : uniqid());
-            $root->setAttribute('rope:name', $library);
-            $root->setAttribute('rope:snapshot', json_encode($state));
+            $root->setAttribute('rope-id', isset($params['id']) ? $params['id'] : uniqid());
+            $root->setAttribute('rope-name', $library);
+            if($root->hasAttribute(self::$DATA_ATTR_KEY)){
+                $data = $root->getAttribute(self::$DATA_ATTR_KEY);
+                $root->removeAttribute(self::$DATA_ATTR_KEY);
+                $data = json_decode($data, true);
+                if($data != null) $state = array_merge($state, $data);
+            }
+            $root->setAttribute('rope-snapshot', json_encode($state));
             return $this->dom->saveHTML($root);
         }
     }
@@ -77,13 +87,7 @@ class RopeCell extends Cell{
                 $publicParams[$key] = $value;
             }
         }
-
         $instance = $instance->fill($publicParams);
-
-        if (method_exists($instance, 'mount')) {
-            $mountParams = $this->getMethodParams($instance, 'mount', $params);
-            $instance->mount(...$mountParams);
-        }
         return [$instance->{$method}(), $publicProperties];
     }
 }

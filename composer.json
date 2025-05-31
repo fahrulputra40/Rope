@@ -10,7 +10,8 @@
     "extra": {
       "codeigniter4": {
         "commands": [
-          "fahrul/rope\\Commands\\MakeRopeComponent"
+          "fahrul/rope\\Commands\\MakeRopeComponent",
+          "fahrul/rope\\Commands\\MakePublichAsset"
         ]
       }
     },
