@@ -36,9 +36,19 @@ export function hasScope(node) {
 
 export function addScopeToNode(node, data, attName, referenceNode) {
     node._x_dataStack = [data, ...closestDataStack(referenceNode || node)]
+
     node.removeAttribute(attName)
     return () => {
         node._x_dataStack = node._x_dataStack.filter(i => i !== data)
+    }
+}
+
+export function addScopeToSnapshot(node, data, attName) {
+    node._x_dataSnapshotKeys = Object.keys(data)
+
+    node.removeAttribute(attName)
+    return () => {
+        node._x_dataSnapshotKeys = null
     }
 }
 
@@ -64,7 +74,7 @@ let mergeProxyTrap = {
 
     get({ objects }, name, thisProxy) {
         if (name == "toJSON") return collapseProxies
-
+        
         return Reflect.get(
             objects.find((obj) =>
                 Reflect.has(obj, name)
@@ -79,9 +89,17 @@ let mergeProxyTrap = {
             objects.find((obj) =>
                 Object.prototype.hasOwnProperty.call(obj, name)
             ) || objects[objects.length - 1];
-        const descriptor = Object.getOwnPropertyDescriptor(target, name);
-        if (descriptor?.set && descriptor?.get)
-            return descriptor.set.call(thisProxy, value) || true;
         return Reflect.set(target, name, value);
     },
+}
+
+
+function collapseProxies() {
+    let keys = Reflect.ownKeys(this)
+
+    return keys.reduce((acc, key) => {
+        acc[key] = Reflect.get(this, key)
+
+        return acc;
+    }, {})
 }

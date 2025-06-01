@@ -1,3 +1,6 @@
+import { onAttributeRemoved } from "./mutation";
+import { elementBindEffect } from "./reactivity";
+
 let prefixName = "rope-";
 
 export function prefix(name) {
@@ -29,29 +32,33 @@ export function directives(el, attributes) {
 }
 
 export function getElementBoundUtilities(el) {
-    let cleanups = []
-    let cleanup = callback => cleanups.push(callback)
-    let utilities = {
-        cleanup,
-    }
-    let doCleanup = () => cleanups.forEach(i => i())
-    return [utilities, doCleanup]
+  let cleanups = [];
+  let cleanup = (callback) => cleanups.push(callback);
+  const [effect, clennEffect] = elementBindEffect(el);
+  cleanups.push(clennEffect);
+  let utilities = {
+    cleanup,
+    effect,
+  };
+  let doCleanup = () => cleanups.forEach((i) => i());
+  return [utilities, doCleanup];
 }
 
 export function getDirectiveHandler(el, directive) {
-    let noop = () => {}
+  let noop = () => {};
 
-    let handler = directiveHandlers[directive.type] || noop
+  let handler = directiveHandlers[directive.type] || noop;
 
-    let [utilities, cleanup] = getElementBoundUtilities(el)
-
-    let fullHandler = () => {
-        if (el._x_ignore || el._x_ignoreSelf) return
-        handler = handler.bind(handler, el, directive, utilities)
-        handler()
-    }
-    fullHandler.runCleanups = cleanup
-    return fullHandler
+  let [utilities, cleanup] = getElementBoundUtilities(el);
+  onAttributeRemoved(el, directive.name, cleanup);
+  
+  let fullHandler = () => {
+    if (el._x_ignore || el._x_ignoreSelf) return;
+    handler = handler.bind(handler, el, directive, utilities);
+    handler();
+  };
+  fullHandler.runCleanups = cleanup;
+  return fullHandler;
 }
 
 let attributeTransformers = [];
@@ -83,7 +90,7 @@ function transformedAttributes() {
 function toParsedDirectives({ name, value }) {
   let typeMatch = name.match(alpineAttributeRegex());
   let valueMatch = name.match(/\-([a-zA-Z0-9\-_]+)/);
-  let modifiers = name.match(/\:[^.\]]+(?=[^\]]*$)/g) || [];
+  let modifiers = name.match(/\.[^.\]]+(?=[^\]]*$)/g) || [];
 
   return {
     name: name,

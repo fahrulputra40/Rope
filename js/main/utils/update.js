@@ -3,6 +3,7 @@ import {
   replaceChild,
 } from "../lifecyrcle";
 import { closestNodeDataStack, getDataStackFrom } from "../nodescope";
+import { raw } from "../reactivity";
 
 export function updateRequestHandler(el, value, expression) {
   return () => {
@@ -13,13 +14,13 @@ export function updateRequestHandler(el, value, expression) {
       fingerprint: {
         id: node.x_el_id,
         name: node.x_el_name,
-        data: Object.assign({}, ...getDataStackFrom(node)),
+        data: Object.assign({}, ...getDataStackFrom(node).map(raw)),
       },
       memo: {
         children: Array.from(children).map((n) => ({
           id: n.x_el_id,
           name: n.x_el_name,
-          data: Object.assign({}, ...getDataStackFrom(n)),
+          data: Object.assign({}, ...getDataStackFrom(n).map(raw)),
         })),
       },
       update: {

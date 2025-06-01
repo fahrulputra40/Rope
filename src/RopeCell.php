@@ -12,11 +12,11 @@ use CodeIgniter\View\Cells\Cell as BaseCell;
 class RopeCell extends Cell{
 
     private DOMDocument $dom;
-    static private $DATA_ATTR_KEY = "rope:data";
 
     public function __construct(CacheInterface $cache)
     {
         parent::__construct($cache);
+        libxml_use_internal_errors(true);
         $this->dom = new DOMDocument();
     }
 
@@ -41,12 +41,6 @@ class RopeCell extends Cell{
             $root = $children[0];
             $root->setAttribute('rope-id', isset($params['id']) ? $params['id'] : uniqid());
             $root->setAttribute('rope-name', $library);
-            if($root->hasAttribute(self::$DATA_ATTR_KEY)){
-                $data = $root->getAttribute(self::$DATA_ATTR_KEY);
-                $root->removeAttribute(self::$DATA_ATTR_KEY);
-                $data = json_decode($data, true);
-                if($data != null) $state = array_merge($state, $data);
-            }
             $root->setAttribute('rope-snapshot', json_encode($state));
             return $this->dom->saveHTML($root);
         }

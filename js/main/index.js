@@ -1,4 +1,7 @@
 import "./directives";
-import { start } from "./lifecyrcle"
+import { start } from "./lifecyrcle";
+import { reactive, effect, stop, toRaw } from "@vue/reactivity";
+import { initEngine } from "./reactivity";
 
-queueMicrotask(start)
+initEngine({ reactive, effect, stop, toRaw });
+queueMicrotask(start);

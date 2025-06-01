@@ -15,7 +15,7 @@ gulp.task('scripts', function () {
       }))
       .bundle()
       .pipe(source('rope.min.js'))  
-      .pipe(buffer())
-      .pipe(uglify())
+      // .pipe(buffer())
+      // .pipe(uglify())
       .pipe(gulp.dest('dist/js'));
   });

@@ -27,7 +27,7 @@ export function evaluateLater(el, expression) {
   let overriddenMagics = {};
 
   let dataStack = [overriddenMagics, ...closestDataStack(el)];
-
+  
   let evaluator =
     typeof expression === "function"
       ? generateEvaluatorFromFunction(dataStack, expression)
@@ -37,27 +37,22 @@ export function evaluateLater(el, expression) {
 }
 
 function generateFunctionFromString(expression, el) {
+  
   let AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
   let rightSideSafeExpression =
     0 ||
-    // Support expressions starting with "if" statements like: "if (...) doSomething()"
     /^[\n\s]*if.*\(.*\)/.test(expression.trim()) ||
-    // Support expressions starting with "let/const" like: "let foo = 'bar'"
     /^(let|const)\s/.test(expression.trim())
       ? `(async()=>{ ${expression} })()`
       : expression;
-
+  
   const safeAsyncFunction = () => {
     try {
       let func = new AsyncFunction(
         ["__self", "scope"],
-        `with (scope) { __self.result = ${rightSideSafeExpression} }; __self.finished = true; return __self.result;`
+        `with (scope) {__self.result = ${rightSideSafeExpression} }; __self.finished = true; return __self.result;`
       );
-
-      Object.defineProperty(func, "name", {
-        value: `[Alpine] ${expression}`,
-      });
 
       return func;
     } catch (error) {
@@ -65,6 +60,7 @@ function generateFunctionFromString(expression, el) {
       return Promise.resolve();
     }
   };
+  
   let func = safeAsyncFunction();
 
   return func;
@@ -81,6 +77,7 @@ function generateEvaluatorFromString(dataStack, expression, el) {
 
     if (typeof func === "function") {
       let promise = func(func, completeScope);
+      
       if (func.finished) {
         runIfTypeOfFunction(receiver, func.result, completeScope, params, el);
         func.result = undefined;
@@ -115,5 +112,9 @@ export function runIfTypeOfFunction(receiver, value, scope, params, el) {
 }
 
 export function generateEvaluatorFromFunction(dataStack, func) {
-  console.error("Unimplemented");
+  return (receiver = () => {}, { scope = {}, params = [] } = {}) => {
+    let result = func.apply(mergeProxies([scope, ...dataStack]), params)
+
+    runIfTypeOfFunction(receiver, result)
+}
 }

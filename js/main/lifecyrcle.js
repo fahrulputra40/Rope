@@ -1,4 +1,5 @@
 import { directives } from "./directive";
+import { cleanupAttributes, cleanupElement } from "./mutation";
 import { walk } from "./utils/walk";
 
 let started = false;
@@ -50,13 +51,14 @@ export function findClosest(el, callback) {
   return findClosest(el.parentElement, callback);
 }
 
-export function destroyChild(el, walker = walk) {
-  let skip = true;
+export function destroyChild(el, walker = walk, skipParent = true) {
   walker(el, (el) => {
-    if (skip) {
-      skip = false;
+    if (skipParent) {
+      skipParent = false;
       return;
     }
+    cleanupElement(el);
+    cleanupAttributes(el);
     delete el._x_marker;
   });
   el.innerHTML = "";
